@@ -55,6 +55,37 @@ Quill html text editor
         }
 
         this._quill = new Quill(editor, options);
+
+        this._quill.on('text-change', function(delta, oldDelta, source) {
+          if (source == 'api') {
+            this.fire('api-text-change')
+          } else if (source == 'user') {
+            this.fire('user-text-change')
+          }
+          this.fire('text-change')
+        }.bind(this));
+
+        this._quill.on('selection-change', function(range, oldRange, source) {
+          var d = {range:range, oldRange:oldRange, source:source}
+          if (range) {
+            if (range.length == 0) {
+              console.log('User cursor is on', range.index);
+              this.fire('selection-change-cursor', d)
+            } else {
+              var text = quill.getText(range.index, range.length);
+              console.log('User has highlighted', text);
+              this.fire('selection-change-highlight', d)
+            }
+          } else {
+            console.log('Cursor not in the editor');
+            this.fire('selection-change-outside-editor', d)
+          }
+          this.fire('selection-change', d)
+        }.bind(this));
+
+        this._quill.on('editor-change', function(eventName, ...args) {
+          this.fire('editor-change', eventName)
+        }.bind(this));
       },
 
       execute(method, arguments) {
