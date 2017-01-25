@@ -1,0 +1,66 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`polymer-quill`
+Quill html text editor
+
+@demo demo/index.html
+-->
+<link href="https://cdn.quilljs.com/1.2.0/quill.snow.css" rel="stylesheet">
+
+<dom-module id="polymer-quill">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <div id="editor">
+      <p>Hello World!</p>
+      <p>Some initial <strong>bold</strong> text</p>
+      <p><br></p>
+    </div>
+  </template>
+
+  <script src="https://cdn.quilljs.com/1.2.0/quill.js"></script>
+  <script>
+    Polymer({
+
+      is: 'polymer-quill',
+
+      properties: {
+        theme: {
+          type: String,
+          value: 'snow',
+        },
+
+        options: {
+          type: Object,
+          value() { return {} },
+        },
+
+        _quill: Object
+      },
+
+      attached() {
+        var editor = this.$$('#editor')
+
+        var options = {
+          theme: this.theme
+        }
+
+        // Overwrite/Set defaultOptions with initOptions
+        for (var k in this.options) {
+          options[k] = this.options[k];
+        }
+
+        this._quill = new Quill(editor, options);
+      },
+
+      execute(method, arguments) {
+        return this._quill[method](arguments)
+      },
+
+    });
+  </script>
+</dom-module>
